@@ -6,7 +6,6 @@ import {
   onCleanup,
   createEffect,
 } from 'solid-js'
-import styles from '../../../assets/index.css'
 import { CommandData } from '../../commands'
 import { BubbleButton } from './BubbleButton'
 import { PreviewMessage, PreviewMessageProps } from './PreviewMessage'
@@ -26,6 +25,7 @@ export type BubbleProps = BotProps &
     onOpen?: () => void
     onClose?: () => void
     onPreviewMessageClick?: () => void
+    styles?: Promise<string>
   }
 
 export const Bubble = (props: BubbleProps) => {
@@ -36,6 +36,7 @@ export const Bubble = (props: BubbleProps) => {
     'onPreviewMessageClick',
     'theme',
     'autoShowDelay',
+    'styles',
   ])
   const [isMounted, setIsMounted] = createSignal(true)
   const [prefilledVariables, setPrefilledVariables] = createSignal(
@@ -61,8 +62,9 @@ export const Bubble = (props: BubbleProps) => {
 
   let progressBarContainerRef
 
+  const [styles, setStyles] = createSignal('')
+
   onMount(() => {
-    window.addEventListener('message', processIncomingEvent)
     const autoShowDelay = bubbleProps.autoShowDelay
     const previewMessageAutoShowDelay =
       bubbleProps.previewMessage?.autoShowDelay
@@ -78,6 +80,9 @@ export const Bubble = (props: BubbleProps) => {
         showMessage()
       }, previewMessageAutoShowDelay)
     }
+    ;(bubbleProps.styles ?? import('../../../assets/index.css')).then((css) =>
+      setStyles(css.default ?? css)
+    )
   })
 
   onCleanup(() => {
@@ -161,7 +166,7 @@ export const Bubble = (props: BubbleProps) => {
       <EnvironmentProvider
         value={document.querySelector('typebot-bubble')?.shadowRoot as Node}
       >
-        <style>{styles}</style>
+        <style>{styles()}</style>
         <Show when={isPreviewMessageDisplayed()}>
           <PreviewMessage
             {...previewMessage()}

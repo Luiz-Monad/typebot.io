@@ -1,7 +1,6 @@
-import styles from '../../../assets/index.css'
 import { Bot, BotProps } from '@/components/Bot'
 import { CommandData } from '@/features/commands/types'
-import { createSignal, onCleanup, onMount, Show } from 'solid-js'
+import { createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
 import { EnvironmentProvider } from '@ark-ui/solid'
 
 const hostElementCss = `
@@ -13,10 +12,16 @@ const hostElementCss = `
 }
 `
 
+export type StandardProps = BotProps & {
+  styles?: Promise<string>
+}
+
 export const Standard = (
-  props: BotProps,
+  props: StandardProps,
   { element }: { element: HTMLElement }
 ) => {
+  const [standardProps, botProps] = splitProps(props, ['styles'])
+
   const [isBotDisplayed, setIsBotDisplayed] = createSignal(false)
 
   const launchBot = () => {
@@ -28,9 +33,14 @@ export const Standard = (
       launchBot()
   })
 
+  const [styles, setStyles] = createSignal('')
+
   onMount(() => {
     window.addEventListener('message', processIncomingEvent)
     botLauncherObserver.observe(element)
+    ;(standardProps.styles ?? import('../../../assets/index.css')).then((css) =>
+      setStyles(css.default ?? css)
+    )
   })
 
   const processIncomingEvent = (event: MessageEvent<CommandData>) => {
@@ -47,11 +57,11 @@ export const Standard = (
       value={document.querySelector('typebot-standard')?.shadowRoot as Node}
     >
       <style>
-        {styles}
-        {hostElementCss}
+        {styles()}
+        {!standardProps.styles && hostElementCss}
       </style>
       <Show when={isBotDisplayed()}>
-        <Bot {...props} />
+        <Bot {...botProps} />
       </Show>
     </EnvironmentProvider>
   )

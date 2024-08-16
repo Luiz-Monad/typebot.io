@@ -1,4 +1,3 @@
-import styles from '../../../assets/index.css'
 import {
   createSignal,
   onMount,
@@ -25,6 +24,7 @@ export type PopupProps = BotProps &
     isOpen?: boolean
     onOpen?: () => void
     onClose?: () => void
+    styles?: Promise<string>
   }
 
 export const Popup = (props: PopupProps) => {
@@ -35,6 +35,7 @@ export const Popup = (props: PopupProps) => {
     'theme',
     'isOpen',
     'defaultOpen',
+    'styles',
   ])
 
   const [prefilledVariables, setPrefilledVariables] = createSignal(
@@ -42,6 +43,8 @@ export const Popup = (props: PopupProps) => {
   )
 
   const [isBotOpened, setIsBotOpened] = createSignal(popupProps.isOpen ?? false)
+
+  const [styles, setStyles] = createSignal('')
 
   onMount(() => {
     if (
@@ -57,6 +60,9 @@ export const Popup = (props: PopupProps) => {
         openBot()
       }, autoShowDelay)
     }
+    ;(popupProps.styles ?? import('../../../assets/index.css')).then((css) =>
+      setStyles(css.default ?? css)
+    )
   })
 
   onCleanup(() => {
@@ -122,7 +128,7 @@ export const Popup = (props: PopupProps) => {
       <EnvironmentProvider
         value={document.querySelector('typebot-popup')?.shadowRoot as Node}
       >
-        <style>{styles}</style>
+        <style>{styles()}</style>
         <div
           class="relative"
           aria-labelledby="modal-title"
@@ -132,7 +138,7 @@ export const Popup = (props: PopupProps) => {
             'z-index': props.theme?.zIndex ?? 42424242,
           }}
         >
-          <style>{styles}</style>
+          <style>{styles()}</style>
           <div
             class="fixed inset-0 bg-black bg-opacity-50 transition-opacity animate-fade-in"
             part="overlay"

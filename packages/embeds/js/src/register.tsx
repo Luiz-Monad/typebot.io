@@ -1,6 +1,6 @@
 import { customElement } from 'solid-element'
 import {
-  defaultBotProps,
+  defaultStandardProps,
   defaultBubbleProps,
   defaultPopupProps,
 } from './constants'
@@ -11,7 +11,7 @@ import { Standard } from './features/standard'
 export const registerWebComponents = () => {
   if (typeof window === 'undefined') return
   // @ts-expect-error element incorect type
-  customElement('typebot-standard', defaultBotProps, Standard)
+  customElement('typebot-standard', defaultStandardProps, Standard)
   customElement('typebot-bubble', defaultBubbleProps, Bubble)
   customElement('typebot-popup', defaultPopupProps, Popup)
 }

@@ -1,8 +1,9 @@
 import type { BubbleProps } from './features/bubble'
 import type { PopupProps } from './features/popup'
+import type { StandardProps } from './features/standard'
 import type { BotProps } from './components/Bot'
 
-export const defaultBotProps: BotProps = {
+const defaultBotProps: BotProps = {
   typebot: undefined,
   onNewInputBlock: undefined,
   onAnswer: undefined,
@@ -15,6 +16,12 @@ export const defaultBotProps: BotProps = {
   apiHost: undefined,
   resultId: undefined,
   sessionId: undefined,
+  font: undefined,
+}
+
+export const defaultStandardProps: StandardProps = {
+  ...defaultBotProps,
+  styles: undefined,
 }
 
 export const defaultPopupProps: PopupProps = {
@@ -25,6 +32,7 @@ export const defaultPopupProps: PopupProps = {
   autoShowDelay: undefined,
   isOpen: undefined,
   defaultOpen: undefined,
+  styles: undefined,
 }
 
 export const defaultBubbleProps: BubbleProps = {
@@ -35,4 +43,5 @@ export const defaultBubbleProps: BubbleProps = {
   previewMessage: undefined,
   onPreviewMessageClick: undefined,
   autoShowDelay: undefined,
+  styles: undefined,
 }
