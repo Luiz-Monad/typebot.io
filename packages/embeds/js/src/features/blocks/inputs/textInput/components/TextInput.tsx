@@ -94,6 +94,12 @@ export const TextInput = (props: Props) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit()
   }
 
+  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
+    const { data } = event
+    if (!data.isFromTypebot) return
+    if (data.command === 'setInputValue') setInputValue(data.value)
+  }
+
   onMount(() => {
     if (!isMobile() && inputRef)
       inputRef.focus({
@@ -105,12 +111,6 @@ export const TextInput = (props: Props) => {
   onCleanup(() => {
     window.removeEventListener('message', processIncomingEvent)
   })
-
-  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
-    const { data } = event
-    if (!data.isFromTypebot) return
-    if (data.command === 'setInputValue') setInputValue(data.value)
-  }
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault()

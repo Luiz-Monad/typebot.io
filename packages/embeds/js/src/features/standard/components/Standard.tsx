@@ -36,11 +36,14 @@ export const Standard = (
   const [styles, setStyles] = createSignal('')
 
   onMount(() => {
-    window.addEventListener('message', processIncomingEvent)
     botLauncherObserver.observe(element)
     ;(standardProps.styles ?? import('../../../assets/index.css')).then((css) =>
       setStyles(css.default ?? css)
     )
+  })
+
+  onCleanup(() => {
+    botLauncherObserver.disconnect()
   })
 
   const processIncomingEvent = (event: MessageEvent<CommandData>) => {
@@ -48,8 +51,12 @@ export const Standard = (
     if (!data.isFromTypebot) return
   }
 
+  onMount(() => {
+    window.addEventListener('message', processIncomingEvent)
+  })
+
   onCleanup(() => {
-    botLauncherObserver.disconnect()
+    window.removeEventListener('message', processIncomingEvent)
   })
 
   return (

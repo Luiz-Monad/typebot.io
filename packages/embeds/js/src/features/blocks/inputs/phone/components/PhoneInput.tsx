@@ -90,6 +90,12 @@ export const PhoneInput = (props: PhoneInputProps) => {
     inputRef?.focus()
   }
 
+  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
+    const { data } = event
+    if (!data.isFromTypebot) return
+    if (data.command === 'setInputValue') setInputValue(data.value)
+  }
+
   onMount(() => {
     if (!isMobile() && inputRef) inputRef.focus({ preventScroll: true })
     window.addEventListener('message', processIncomingEvent)
@@ -98,12 +104,6 @@ export const PhoneInput = (props: PhoneInputProps) => {
   onCleanup(() => {
     window.removeEventListener('message', processIncomingEvent)
   })
-
-  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
-    const { data } = event
-    if (!data.isFromTypebot) return
-    if (data.command === 'setInputValue') setInputValue(data.value)
-  }
 
   return (
     <div

@@ -85,10 +85,6 @@ export const Bubble = (props: BubbleProps) => {
     )
   })
 
-  onCleanup(() => {
-    window.removeEventListener('message', processIncomingEvent)
-  })
-
   createEffect(() => {
     if (!props.prefilledVariables) return
     setPrefilledVariables((existingPrefilledVariables) => ({
@@ -112,6 +108,14 @@ export const Bubble = (props: BubbleProps) => {
       }))
     if (data.command === 'unmount') unmount()
   }
+
+  onMount(() => {
+    window.addEventListener('message', processIncomingEvent)
+  })
+
+  onCleanup(() => {
+    window.removeEventListener('message', processIncomingEvent)
+  })
 
   const openBot = () => {
     if (!isBotStarted()) setIsBotStarted(true)

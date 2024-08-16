@@ -53,7 +53,6 @@ export const Popup = (props: PopupProps) => {
       getBotOpenedStateFromStorage()
     )
       openBot()
-    window.addEventListener('message', processIncomingEvent)
     const autoShowDelay = popupProps.autoShowDelay
     if (isDefined(autoShowDelay)) {
       setTimeout(() => {
@@ -63,10 +62,6 @@ export const Popup = (props: PopupProps) => {
     ;(popupProps.styles ?? import('../../../assets/index.css')).then((css) =>
       setStyles(css.default ?? css)
     )
-  })
-
-  onCleanup(() => {
-    window.removeEventListener('message', processIncomingEvent)
   })
 
   createEffect(() => {
@@ -98,6 +93,14 @@ export const Popup = (props: PopupProps) => {
         ...data.variables,
       }))
   }
+
+  onMount(() => {
+    window.addEventListener('message', processIncomingEvent)
+  })
+
+  onCleanup(() => {
+    window.removeEventListener('message', processIncomingEvent)
+  })
 
   const openBot = () => {
     setIsBotOpened(true)

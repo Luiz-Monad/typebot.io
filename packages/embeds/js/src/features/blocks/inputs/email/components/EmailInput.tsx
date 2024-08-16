@@ -32,6 +32,12 @@ export const EmailInput = (props: Props) => {
     if (e.key === 'Enter') submit()
   }
 
+  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
+    const { data } = event
+    if (!data.isFromTypebot) return
+    if (data.command === 'setInputValue') setInputValue(data.value)
+  }
+
   onMount(() => {
     if (!isMobile() && inputRef) inputRef.focus({ preventScroll: true })
     window.addEventListener('message', processIncomingEvent)
@@ -40,12 +46,6 @@ export const EmailInput = (props: Props) => {
   onCleanup(() => {
     window.removeEventListener('message', processIncomingEvent)
   })
-
-  const processIncomingEvent = (event: MessageEvent<CommandData>) => {
-    const { data } = event
-    if (!data.isFromTypebot) return
-    if (data.command === 'setInputValue') setInputValue(data.value)
-  }
 
   return (
     <div
