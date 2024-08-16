@@ -16,12 +16,7 @@ const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 const packageVersion = packageJson.version
 const preamble = `// v${packageVersion}`
 
-const indexConfig = {
-  input: './src/index.ts',
-  output: {
-    file: 'dist/index.js',
-    format: 'es',
-  },
+const baseConfig = {
   onwarn,
   watch: {
     clearScreen: false,
@@ -47,23 +42,22 @@ const indexConfig = {
       minimize: true,
       inject: false,
     }),
-    terser({
-      format: { preamble },
-    }),
+    // terser({
+    //   format: { preamble },
+    // }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('production'),
+      // 'process.env.NODE_ENV': JSON.stringify('production'),
       preventAssignment: true,
     }),
   ],
 }
 
 const configs = [
-  indexConfig,
   {
-    ...indexConfig,
-    input: './src/web.ts',
+    ...baseConfig,
+    input: ['./src/index.ts'],
     output: {
-      file: 'dist/web.js',
+      dir: 'dist',
       format: 'es',
     },
   },
