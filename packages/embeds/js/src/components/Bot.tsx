@@ -14,7 +14,6 @@ import {
   wipeExistingChatStateInStorage,
 } from '@/utils/storage'
 import { setCssVariablesValue } from '@/utils/setCssVariablesValue'
-import immutableCss from '../assets/immutable.css'
 import {
   Font,
   InputBlock,
@@ -215,7 +214,6 @@ export const Bot = (props: BotProps & { class?: string }) => {
   return (
     <>
       <style>{customCss()}</style>
-      <style>{immutableCss}</style>
       <Show when={error()} keyed>
         {(error) => <ErrorMessage error={error} />}
       </Show>
