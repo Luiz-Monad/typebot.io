@@ -168,7 +168,10 @@ export const Bubble = (props: BubbleProps) => {
   return (
     <Show when={isMounted()}>
       <EnvironmentProvider
-        value={document.querySelector('typebot-bubble')?.shadowRoot as Node}
+        value={
+          (document.querySelector('typebot-bubble')?.shadowRoot ??
+            document) as Node
+        }
       >
         <style>{styles()}</style>
         <Show when={isPreviewMessageDisplayed()}>

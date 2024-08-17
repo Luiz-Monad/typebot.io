@@ -61,7 +61,10 @@ export const Standard = (
 
   return (
     <EnvironmentProvider
-      value={document.querySelector('typebot-standard')?.shadowRoot as Node}
+      value={
+        (document.querySelector('typebot-standard')?.shadowRoot ??
+          document) as Node
+      }
     >
       <style>
         {styles()}
