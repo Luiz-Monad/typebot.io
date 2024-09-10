@@ -3,20 +3,21 @@ name: Create Tag
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   create-tag:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: '${{ secrets.PERSONAL_TOKEN }}'
+      GITHUB_TOKEN: '${{ secrets.USER_TOKEN }}'
     steps:
       - uses: actions/checkout@v2
+
       - name: 'Create main tag'
         id: 'main'
         uses: butlerlogic/action-autotag@1.1.2
         with:
-          tag_prefix: 'v'
+          tag_prefix: 'x-v'
 
       - name: 'Create latest tag'
         if: ${{ contains(steps.main.outputs.tagname, 'v') }}
@@ -26,16 +27,16 @@ jobs:
         uses: butlerlogic/action-autotag@1.1.2
         with:
           root: '/packages/embeds/js'
-          tag_prefix: 'js-v'
+          tag_prefix: 'x-js-v'
 
       - name: 'Create react tag'
         uses: butlerlogic/action-autotag@1.1.2
         with:
           root: '/packages/embeds/react'
-          tag_prefix: 'react-v'
+          tag_prefix: 'x-react-v'
 
       - name: 'Create nextjs tag'
         uses: butlerlogic/action-autotag@1.1.2
         with:
           root: '/packages/embeds/nextjs'
-          tag_prefix: 'nextjs-v'
+          tag_prefix: 'x-nextjs-v'

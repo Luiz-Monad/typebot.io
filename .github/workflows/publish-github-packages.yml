@@ -1,0 +1,55 @@
+name: Node.js Package
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/embeds/js/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.0.0
+        with:
+          version: 9.5.0
+
+      - name: Install package manager
+        run: pnpm install --frozen-lockfile
+
+      - name: Install packages
+        run: pnpm turbo run build --filter=@typebot.io/js...
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
+      - name: Create Tarball
+        run: |
+          mkdir -p release
+          tar -czf release/typebot.io-js.tar.gz -C packages/embeds/js/dist .
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release/typebot.io-js.tar.gz
+          asset_name: typebot.io-js-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_content_type: application/gzip
