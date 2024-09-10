@@ -26,21 +26,26 @@ jobs:
         run: pnpm turbo run build --filter=@typebot.io/js...
 
       - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+          path: packages/embeds/js
 
       - name: Create Tarball
-        run: |
-          mkdir -p release
-          tar -czf release/typebot.io-js.tar.gz -C packages/embeds/js/dist .
+        uses: a7ul/tar-action@v1.1.0
+        with:
+          command: c
+          files: packages/embeds/js/dist
+          outPath: typebot.io-js.tar.gz
 
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: release-js-v${{ steps.package-version.outputs.current-version }}
+          release_name: Release ${{ steps.package-version.outputs.current-version }}
           draft: false
           prerelease: false
 
@@ -50,6 +55,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release/typebot.io-js.tar.gz
-          asset_name: typebot.io-js-${{ steps.get_version.outputs.VERSION }}.tar.gz
+          asset_path: typebot.io-js.tar.gz
+          asset_name: typebot.io-js-v${{ steps.package-version.outputs.current-version }}.tar.gz
           asset_content_type: application/gzip
